@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.awt.Desktop;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 /**
  * 
@@ -10,13 +12,16 @@ import java.net.URISyntaxException;
  */
 public class CSV2HTML {
   
- 
+  
+  static Scanner fr = null;
+  static PrintWriter pw = null;
+  static PrintWriter log = null;
   
   public static void main(String[] args) throws IOException, URISyntaxException {
 	
-	launchAllInputFormatTests();
+	//launchAllInputFormatTests();
 	//openLocalFiles(new String[] {"doctorList.html","covidStatistics.html"});
-	
+	//deleteOnExit("TestDoc2.txt");
 	
 	
 	
@@ -26,7 +31,7 @@ public class CSV2HTML {
   }//END main
   
   /**
-   * Opens listed files, files must be in project 'doc' directory.
+   * Opens listed files, files must be in projects' 'doc' directory.
    * @param fileNames
    */
   private static void openLocalFiles(String[] fileNames) {
@@ -41,7 +46,20 @@ public class CSV2HTML {
 	//Possible other method, need to know how to format URIs.
 	//Desktop.getDesktop().browse(new URI("C:/Users/user/Desktop/COMP 249/Assignments/a3/COMP249_A3/COMP249-A 3/doctorList.html"));
   }
-   
+  
+  /**
+   * Deletes listed file after file closed. Files must be in projects' 'doc' directory.
+   * @param fileName
+   */
+  private static void deleteOnExit(String fileName) {
+	File file = new File("C:/Users/user/Desktop/COMP 249/Assignments/a3/COMP249_A3/COMP249-A 3/" + fileName);
+	try {
+	if(!file.exists()) {log.println("File: " + fileName + "was not found and couldn't be deleted." );}}
+	catch (NullPointerException npe) 
+	  {System.out.println("For deleteOnExit(): Exception log does not exist, exception not written.");}
+	File path = file.getAbsoluteFile();  
+	path.deleteOnExit();
+  }
   
 //====================================================== INPUT FORMAT CHECKERS =========================================================//
   
@@ -96,6 +114,7 @@ public class CSV2HTML {
 //============================================================= TESTS ==================================================================//
   
   
+  @SuppressWarnings("unused")
   private final static void launchAllInputFormatTests() {
 	noteAndTitleMatchTest();
 	columnTitleMatchTest();
