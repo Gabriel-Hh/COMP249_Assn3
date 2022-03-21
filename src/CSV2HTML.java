@@ -1,46 +1,176 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.awt.Desktop;
-import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
  * 
- * @author user
+ * @author Gabriel Horth
+ * @version 1.0
  *
  */
 public class CSV2HTML {
   
-  
-  static Scanner fr = null;
-  static PrintWriter pw = null;
+  static Scanner key = new Scanner(System.in);
+  static Scanner[] fr = null;
+  static PrintWriter[] pw = null;
   static PrintWriter log = null;
-  
-  public static void main(String[] args) throws IOException, URISyntaxException {
-	
-	//launchAllInputFormatTests();
-	//openLocalFiles(new String[] {"doctorList.html","covidStatistics.html"});
-	//deleteOnExit("TestDoc2.txt");
-	
-	
-	
+  static String[] fileNames = null;
 
+  /**
+   * 
+   */
+  public static void main(String[] args) {
 	
+	System.out.println("=============================================================================================");
+	System.out.println("\t\t\tWelcome to the free CSV -> HTML Table Converter");
+	System.out.println("=============================================================================================");
+	
+	System.out.println();
+	System.out.println("Press <ENTER> to begin..");
+	key.nextLine();
+	
+	fileNames = new String[]{"covidStatistics.csv","doctorList.csv"};
+	
+	System.out.println();
+	System.out.println("Linking file(s)..");
+	
+	linkSourceFiles();
+	System.out.println("Input files linked successfully.");
+	
+	System.out.println("\nPress <ENTER> to initialise output files..");
+	key.nextLine();
+	
+	createOutputFiles();
+	System.out.println("Output files initialized successfully.");
+	
+	System.out.println("\nPress <ENTER> to convert files files..");
+	key.nextLine();
+	
+	for(int i = 0; i < fileNames.length; i++) {
+	try{
+	  ConvertCSVtoHTML(fr[i],pw[i]);
+	}
+	catch(CSVAttributeMissing e) {
+	  System.out.println(e.getMessage());
+	  log.println(e.getMessage());
+	}
+	
+	}
+	closeAllFileStreams();
+	System.out.println("File conversion finished.");
+	
+	chooseFilesToOpen(0);
+	
+	key.close();
+	System.out.println();
+	System.out.println("Thanks for trying trying out this converter!");
+	System.out.println("Program closing...");
 	System.exit(0);
   }//END main
   
   /**
-   * Opens listed files, files must be in projects' 'doc' directory.
-   * @param fileNames
+   * 
    */
-  private static void openLocalFiles(String[] fileNames) {
+  public static void ConvertCSVtoHTML(Scanner fr,PrintWriter pw)throws CSVAttributeMissing {
+	
+	
+  }
+  
+  /**
+   * 
+   */
+  public static void linkSourceFiles() {
+	fr = new Scanner[fileNames.length];
+	
+	for(int i = 0; i < fileNames.length;i++) {
+	  
+	  try {
+		fr[i] = new Scanner(new FileInputStream("C:/Users/user/Desktop/Java Workplace/COMP249_Assn3/doc/"+ fileNames[i]));
+	  }catch (IOException ioe) 
+	  {System.out.println("Could not open input file "+ fileNames[i] +" for reading."
+		  + "\nPlease check that the file exists and is readable. This program will terminate after closing any opened files.");
+	  	for(int j = 0; j < i; j++) { //Closes open files in case of IOEXCEPTION.
+	  	  fr[j].close();
+	  	}
+	  }
+	}
+  }
+  
+  /**
+   * 
+   */
+  public static void closeAllFileStreams() {
+	for(PrintWriter pw: pw) {pw.close();}
+	for(Scanner fr: fr) {fr.close();}
+	log.close();
+  }
+  
+  /**
+   * 
+   */
+  public static void createOutputFiles() {
+	pw = new PrintWriter[fileNames.length];
+	
+	int i = 0;
+	try {
+	  log = new PrintWriter(new FileOutputStream("Exceptions.log"),true);
+	  for(; i < pw.length; i++) {
+		String htmlName = fileNames[i].substring(0, fileNames[i].indexOf('.')) + ".html";
+		pw[i] = new PrintWriter(new FileOutputStream(htmlName),true);
+		}
+	}
+	catch (IOException e) {
+	  String causalFile;
+	  if(i==0) {causalFile = "Exception.log";}
+	  else {causalFile = fileNames[i];}
+	  
+	  System.out.println("Error: file " + causalFile + " could not be created."
+	  	+ "Type: Unrecoverable, program will close.");
+	  fileCreationErrorCleanup();
+	  System.exit(1);
+	}
+  }
+
+  /**
+   * 
+   */
+  public static void fileCreationErrorCleanup() {
+	for(String fileName: fileNames ) {deleteOnExit(fileName);}
+	deleteOnExit("Exception.log");
+	closeAllFileStreams();
+	key.close();
+  }
+  
+  /**
+   * 
+   */
+  private static void chooseFilesToOpen(int trial) {
+	boolean failed = true;
+	while(trial<2 && failed) {
+	  System.out.println("\nPlease enter the name of HTML file(s) to open(Enter as 'file' or 'file,file'): ");
+	  String[] files = key.nextLine().split(",");
+	  try {openLocalFiles(files);}
+	  catch(IllegalArgumentException e) {System.out.println("Error: Invalid file name.");chooseFilesToOpen(++trial);}
+	  failed = false;
+	}
+  }
+ 
+  /** 
+   * Opens listed files, files must be in projects' main directory.
+   * @param fileNames
+   * @throws  
+   */  
+  private static void openLocalFiles(String[] fileNames) throws IllegalArgumentException {
 	for(String fileName:fileNames) {
 	  try {
-		Desktop.getDesktop().open(new File("C:/Users/user/Desktop/COMP 249/Assignments/a3/COMP249_A3/COMP249-A 3/" + fileName));
+		Desktop.getDesktop().open(new File("C:/Users/user/Desktop/Java Workplace/COMP249_Assn3/" + fileName));
 	  } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		System.out.println("Error: File" + fileName + "could not be opened"
+			+ "\nPlease verify file name.");
 	  }
 	}
 	//Possible other method, need to know how to format URIs.
@@ -52,7 +182,7 @@ public class CSV2HTML {
    * @param fileName
    */
   private static void deleteOnExit(String fileName) {
-	File file = new File("C:/Users/user/Desktop/COMP 249/Assignments/a3/COMP249_A3/COMP249-A 3/" + fileName);
+	File file = new File("C:/Users/user/Desktop/Java Workplace/COMP249_Assn3/doc/" + fileName);
 	try {
 	if(!file.exists()) {log.println("File: " + fileName + "was not found and couldn't be deleted." );}}
 	catch (NullPointerException npe) 
@@ -63,7 +193,7 @@ public class CSV2HTML {
   
 //====================================================== INPUT FORMAT CHECKERS =========================================================//
   
-  //REGEX memory-aid: X? = once or no times. X* zero or more times. X+ one or more times. X-Y indicates range (inclusive)
+  //REGEX memory-aid: X? = once or no times. X* = zero or more times. X+ = one or more times. X-Y indicates range (inclusive)
   
   /**
    * Checks if String is valid title.
