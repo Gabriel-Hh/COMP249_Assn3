@@ -1,0 +1,33 @@
+WARNING: In file covidStatistics.csv line 3 is not converted to HTML: missing data: ICU.
+WARNING: In file covidStatistics.csv line 5 is not converted to HTML: missing data: Hospitalized.
+Tue Mar 22 12:29:22 EDT 2022
+WARNING: In file covidStatistics.csv line 3 is not converted to HTML: missing data: ICU.
+WARNING: In file covidStatistics.csv line 5 is not converted to HTML: missing data: Hospitalized.
+Tue Mar 22 12:40:25 EDT 2022
+WARNING: In file covidStatistics.csv line 3 is not converted to HTML: missing data: ICU.
+WARNING: In file covidStatistics.csv line 5 is not converted to HTML: missing data: Hospitalized.
+
+Tue Mar 22 12:48:35 EDT 2022
+
+Tue Mar 22 13:03:28 EDT 2022
+ERROR: In file covidStatistics.csv. Missing attribute. File is not converted to HTML.
+
+Tue Mar 22 13:09:08 EDT 2022
+ERROR: In file covidStatistics.csv. Missing attribute. File is not converted to HTML.
+
+Tue Mar 22 13:28:59 EDT 2022
+ERROR: In file covidStatistics.csv. Missing attribute. File is not converted to HTML.
+
+Tue Mar 22 13:34:34 EDT 2022
+ERROR: In file covidStatistics.csv. Missing attribute. File is not converted to HTML.
+
+Tue Mar 22 13:36:27 EDT 2022
+ERROR: In file doctorList.csv. Missing attribute. File is not converted to HTML.
+
+Tue Mar 22 13:40:04 EDT 2022
+WARNING: In file doctorList.csv line 9 is not converted to HTML: missing data: Speciality.
+
+Tue Mar 22 13:44:15 EDT 2022
+
+Tue Mar 22 13:45:09 EDT 2022
+
