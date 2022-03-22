@@ -7,10 +7,20 @@ import java.awt.Desktop;
 import java.util.Date;
 import java.util.Scanner;
 
+//-----------------------------------------------------
+//Assignment: 3
+//Question: CSV2HTML Class
+//Written by: Gabriel Horth, 40186942
+//-----------------------------------------------------
+
 /**
- * 
+ * Class to convert CSV tables to HTML.
+ * Note: This version only accepts tables with four or more columns.
  * @author Gabriel Horth
  * @version 1.0
+ * @see java.io
+ * @see java.awt.Desktop
+ * @see java.lang.String
  *
  */
 public class CSV2HTML {
@@ -19,14 +29,21 @@ public class CSV2HTML {
   private static Scanner[] fr = null;
   private static PrintWriter[] pw = null;
   private static PrintWriter log = null;
-  protected static String[] fileNames = null;
-  protected static File[] outputFiles = null;
-  private static int fileIndex; // USED loop in by main()
+  private static String[] fileNames = null;
+  private static File[] outputFiles = null;
+  private static int fileIndex; // USED by loop in by main()
+  /**
+   * Local absolute path to input file directory.
+   */
   protected final static File inputDirectory = new File("C:/Users/user/Desktop/Java Workplace/COMP249_Assn3/doc/");
+  /**
+   * Local absolute path to output file directory.
+   */
   protected final static File outputDirectory =new File("C:/Users/user/Desktop/Java Workplace/COMP249_Assn3/");
 
+  
   /**
-   * 
+   * Executes CSV to HTML converter.
    */
   public static void main(String[] args) {
 
@@ -86,9 +103,16 @@ public class CSV2HTML {
   }// END main
 
   /**
-   * 
+   * Processes linked input/output files.
+   * @param fr FileReader linked to source file.
+   * @param pw PrintWriter linked to output file.
+   * @param log PrintWriter linked to exception log file.
+   * @throws CSVAttributeMissing input file must have all table-column titles.
+   * @see java.util.Scanner
+   * @see java.io.PrintWriter
+   * @see CSVAttributeMissing
    */
-  public static void ConvertCSVtoHTML(Scanner fr, PrintWriter pw, PrintWriter log) throws CSVAttributeMissing {
+  protected static void ConvertCSVtoHTML(Scanner fr, PrintWriter pw, PrintWriter log) throws CSVAttributeMissing {
 	int lineNumber = 0;
 	String line;
 	String[] lineArray;
@@ -116,10 +140,14 @@ public class CSV2HTML {
 	if (isValidColumnTitles(line)) {
 	  columnTitleArray = line.split(",");
 
-	  pw.println("  <tr>" + "\n\t<td><b>" + columnTitleArray[0] + "</b></td>" + "\n\t<td><b>" + columnTitleArray[1]
-		  + "</b></td>" + "\n\t<td><b>" + columnTitleArray[2] + "</b></td>" + "\n\t<td><b>" + columnTitleArray[3]
-		  + "</b></td>" + "\n  </tr>");
-	} else {
+	  pw.println("  <tr>" 
+		  + "\n\t<td><b>" + columnTitleArray[0] + "</b></td>" 
+		  + "\n\t<td><b>" + columnTitleArray[1] + "</b></td>" 
+		  + "\n\t<td><b>" + columnTitleArray[2] + "</b></td>" 
+		  + "\n\t<td><b>" + columnTitleArray[3] + "</b></td>" 
+		  + "\n  </tr>");
+	} 
+	else {
 	  throw new CSVAttributeMissing(
 		  "ERROR: In file " + fileNames[fileIndex] + ". " + "Missing attribute. File is not converted to HTML.");
 	}
@@ -135,13 +163,21 @@ public class CSV2HTML {
 	  // Valid Data Row
 	  if (isValidDataRow(line)) {
 
-		pw.println("  <tr>" + "\n\t<td>" + lineArray[0] + "</td>" + "\n\t<td>" + lineArray[1] + "</td>" + "\n\t<td>"
-			+ lineArray[2] + "</td>" + "\n\t<td>" + lineArray[3] + "</td>" + "\n  </tr>");
+		pw.println("  <tr>" 
+			+ "\n\t<td>" + lineArray[0] + "</td>" 
+			+ "\n\t<td>" + lineArray[1] + "</td>" 
+			+ "\n\t<td>" + lineArray[2] + "</td>" 
+			+ "\n\t<td>" + lineArray[3] + "</td>" 
+			+ "\n  </tr>");
 	  }
 
 	  // Valid Note
 	  else if (isValidNote(line)) {
-		pw.println("</table>" + "\n<span>" + lineArray[0] + "</span>" + "\n</body>" + "\n</html>");
+		pw.println("</table>" 
+			+ "\n<span>" + lineArray[0] + "</span>" 
+			+ "\n</body>" 
+			+ "\n</html>");
+		hasNote = true;
 	  }
 	  
 	  // Valid Data Row with missing data
@@ -161,7 +197,7 @@ public class CSV2HTML {
 	  }
 	  // ALL other invalid lines
 	  else {
-		String otherError = "WARNING: In  file " + fileNames[fileIndex] + " line " + lineNumber
+		String otherError = "WARNING: In file " + fileNames[fileIndex] + " line " + lineNumber
 			+ " is not converted to HTML: Invalid format or character.";
 		System.out.println(otherError);
 		log.println(otherError);
@@ -170,7 +206,11 @@ public class CSV2HTML {
 	if(!hasNote) {pw.println("</table>" + "\n</body>" + "\n</html>");}
   }
 
-  public static String[] chooseSourceFiles() {
+  /**
+   * Prompts user to choose files to convert.
+   * @return String[] filesNames- array of file names
+   */
+  protected static String[] chooseSourceFiles() {
 	
 	String[] availableFiles = inputDirectory.list((optionalInnerDirectory, fileInDirectory) -> {
 		return fileInDirectory.toLowerCase().endsWith("csv");
@@ -191,9 +231,10 @@ public class CSV2HTML {
   }
   
   /**
-   * 
+   * Links source files to Scanners.
+   * @see java.util.Scanner
    */
-  public static void linkSourceFiles() {
+  protected static void linkSourceFiles() {
 	fr = new Scanner[fileNames.length];
 
 	for (int i = 0; i < fileNames.length; i++) {
@@ -213,9 +254,10 @@ public class CSV2HTML {
   }
 
   /**
-   * 
+   * Closes all open file streams
+   * @see java.io
    */
-  public static void closeAllFileStreams() {
+  protected static void closeAllFileStreams() {
 	if(pw!=null) {
 	  for (PrintWriter pw : pw) {
 		if (pw != null) {
@@ -235,28 +277,31 @@ public class CSV2HTML {
   }
 
   /**
-   * 
+   * Links output files to appropriate PrintWriters.
+   * @see java.io.PrintWriter
    */
-  public static void linkOutputFiles() {
+  protected static void linkOutputFiles() {
 	pw = new PrintWriter[fileNames.length];
-	outputFiles = new File[fileNames.length + 1];
+	outputFiles = new File[fileNames.length + 1]; // +1 is for log file.
 
 	int i = -1;
 	try {
-	  log = new PrintWriter(new FileOutputStream("Exceptions.log",true), true); //Append = true
+	  //Exception Log
+	  log = new PrintWriter(new FileOutputStream("Exceptions.log",true), true); //Append = true, autoflush = true
 	  Date logTime = new Date();
 	  log.println(logTime);
 	  outputFiles[(outputFiles.length - 1)] = new File(outputDirectory.getAbsolutePath() + "/" + "Exceptions.log");
+	  //Files
 	  for (i = 0; i < pw.length; i++) {
 		String htmlName = fileNames[i].substring(0, fileNames[i].indexOf('.')) + ".html";
-		pw[i] = new PrintWriter(new FileOutputStream(htmlName), true);// true = autoflush()
+		pw[i] = new PrintWriter(new FileOutputStream(htmlName), true);// Autoflush = true
 		outputFiles[i] = new File(outputDirectory.getAbsolutePath() + "/" + htmlName);
 		System.out.println(outputFiles[i].getName());
 	  }
 	} catch (IOException e) {
 	  String causalFile;
 	  if (i == -1) {
-		causalFile = "Exception.log";
+		causalFile = "Exceptions.log";
 	  } else {
 		causalFile = fileNames[i];
 	  }
@@ -269,9 +314,9 @@ public class CSV2HTML {
   }
 
   /**
-   * Preforms clean-up in case of error at output file creation.
+   * Performs clean-up in case of error at output file creation.
    */
-  public static void fileCreationErrorCleanup() {
+  protected static void fileCreationErrorCleanup() {
 	for (int i = 0; i < (outputFiles.length-1); i++) { //last output file 'Exceptions.log' will not be deleted: 
 	  deleteOnExit(outputFiles[i]);
 	}
@@ -283,7 +328,7 @@ public class CSV2HTML {
   * Deletes listed file once closed.
   * @param fileToDelete
   */
- private static void deleteOnExit(File fileToDelete) {
+  protected static void deleteOnExit(File fileToDelete) {
 	try {
 	  if (!fileToDelete.exists()) {
 		log.println("File: " + fileToDelete.getName() + "was not found and couldn't be deleted.");
@@ -298,9 +343,9 @@ public class CSV2HTML {
   /**
    * Formats new html doc and opens table.
    * 
-   * @param pw
+   * @param pw PrinterWriter for current file.
    */
-  public static void setUpHTML(PrintWriter pw) {
+  protected static void setUpHTML(PrintWriter pw) {
 	pw.println("<!DOCTYOE html>" + "\n<html>" + "\n<style>"
 		+ "\ntable {font-family: arial, sans-serif;border-collapse: collapse;}"
 		+ "\ntd, th {border: 1px solid #000000;test-align: left;padding: 8px;}"
@@ -310,9 +355,9 @@ public class CSV2HTML {
 
   /**
    *Prompts user to choose files to open.
-   *@param int control variable, user gets only two chances to choose valid files. 
+   *@param trial control variable, user only has two chances to input valid files. 
    */
-  private static void chooseFilesToOpen(int trial) {
+  protected static void chooseFilesToOpen(int trial) {
 	
 	System.out.println("File(s) created:");
 	for (File file : outputFiles) {
@@ -347,12 +392,12 @@ public class CSV2HTML {
   }
 
   /**
-   * Opens listed files.
-   * 
-   * @param fileNames
-   * @throws
+   * Opens listed files using default system file-handler.
+   * @param filesToOpen 
+   * @throws IllegalArgumentException
+   * @see java.awt.Desktop
    */
-  private static void openLocalFiles(File[] filesToOpen) throws IllegalArgumentException {
+  protected static void openLocalFiles(File[] filesToOpen) throws IllegalArgumentException {
 	for (File file : filesToOpen) {
 	  if(file != null) {
 		try {
@@ -367,69 +412,57 @@ public class CSV2HTML {
 	// 249/Assignments/a3/COMP249_A3/COMP249-A 3/doctorList.html"));
   }
 
-  /**
- 
-
 //====================================================== INPUT FORMAT CHECKERS =========================================================//
 
-  // REGEX memory-aid: X? = once or no times. X* = zero or more times. X+ = one or
-  // more times. X-Y indicates range (inclusive)
+  // REGEX memory-aid: X? = once or no times. X* = zero or more times. X+ = one or more times. X-Y indicates range (inclusive)
 
-  /**
-   * Checks if String is valid title.
-   * 
-   * @param line
-   * @return
-   */
-  private static boolean isValidTitle(String line) {
+ /**
+  * Checks if String is valid title.
+  * @param line String to check.
+  * @return true if line contains a string followed by three commas.
+  */
+  protected static boolean isValidTitle(String line) {
 	return line.matches("(([a-zA-Z0-9:%[-][.][﻿]])++\s{0,1})++,,,");
   }
 
   /**
    * Checks if String is valid column titles.
-   * 
-   * @param line
-   * @return
+   * @param line String to check.
+   * @return true if line is four strings seperated by commas.
    */
-  private static boolean isValidColumnTitles(String line) {
+  protected static boolean isValidColumnTitles(String line) {
 	return isValidDataRow(line);
   }
 
   /**
    * Checks if String is valid data row.
-   * 
-   * @param line
-   * @return
+   * @param line String to check.
+   *@return true if line is (atleast) four strings seperated by commas.
    */
-private static boolean isValidDataRow(String line) {
+  protected static boolean isValidDataRow(String line) {
 	return line.matches(
 		"((([a-zA-Z0-9:%[-][.]])++\s{0,1})++,){3}(([a-zA-Z0-9:%[-][.]])++\s{0,1})++");
   }
 
   /**
    * Checks if String is a valid note.
-   * 
-   * @param line String to compare
-   * @return true is line starts with "note", false otherwise.
+   * @param line String to check.
+   *  @return true if line contains a string starting with "Note" followed by three commas.
    */
-  private static boolean isValidNote(String line) {
+  protected static boolean isValidNote(String line) {
 	return isValidTitle(line) && line.regionMatches(true, 0, "note", 0, 4);
   }
 
   /**
    * Checks if String is a valid data row; but allows missing entries.
-   * 
-   * @param line String to check
-   * @return true if seperating commas are present with or without data entries,
-   *         false iff commas are missing or illegal characters.
+   * @param line String to check.
+   * @return true if line isValidDataRow or has missing data entries.
    */
-  private static boolean isValidDataRowWithMissingData(String line) {
+  protected static boolean isValidDataRowWithMissingData(String line) {
 	return line.matches("((([a-zA-Z0-9:%[-][.]])*+\s{0,1})++,){3}(([a-zA-Z0-9:%[-][.]])++\s{0,1})*+");
   }
 
 //====================================================== TESTS =========================================================//
-  
-//============================================================= TESTS ==================================================================//
 
   @SuppressWarnings("unused")
   private final static void launchAllInputFormatTests() {
@@ -494,7 +527,7 @@ private static boolean isValidDataRow(String line) {
 	String rowTest1 = "Age: 0-11,25203,18,54%";
 	String rowTest2 = ",25203,18,54%";
 	String rowTest3 = "Age: 0-11,25203,1854%";
-	String rowTest4 = "Dr. Alice  ,DERMATOLOGY,1-555-234569,H-256";
+	String rowTest4 = "Dr. Alice ,DERMATOLOGY,1-555-234569,H-256";
 	String rowTest5 = "Dr. Jhon,ALLERGY AND IMMUNOLOGY,1-555-125340,H-351";
 
 	System.out.println("rowTest1 String: " + "\"" + rowTest1 + "\"");
